@@ -4,6 +4,7 @@ import cors from "cors";
 import errorHandler from "./middleware/errorHandler";
 import notFound from "./middleware/notFound";
 import helmet from "helmet";
+import router from "./routes/routes";
 
 const app = express();
 
@@ -13,5 +14,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors({ origin: process.env.CORS_ORIGIN, credentials: true }));
 app.use(notFound);
 app.use(errorHandler);
+app.use("/api", router);
 
 export default app;
