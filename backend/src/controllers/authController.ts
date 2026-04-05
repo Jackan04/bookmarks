@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import bcrypt from "bcrypt";
 import prisma from "../lib/prisma";
 import { signToken } from "../lib/jwt";
+import AppError from "../types/AppError";
 
 export async function register(
   req: Request,
@@ -27,6 +28,37 @@ export async function register(
   }
 }
 
-export async function login(req: Request, res: Response, next: NextFunction) {}
+export async function login(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { username, password } = req.body;
 
-export async function getMe(req: Request, res: Response, next: NextFunction) {}
+    const user = await prisma.user.findUnique({
+      where: {
+        username: username,
+      },
+    });
+
+    if (!user) {
+      return next(new AppError("Invalid credentials", 401));
+    }
+
+    const match = await bcrypt.compare(password, user.password);
+
+    if (!match) {
+      return next(new AppError("Invalid credentials", 401));
+    }
+
+    const token = signToken(user.id);
+    return res.status(200).json({ token });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function getMe(req: Request, res: Response, next: NextFunction) {
+  if (!req.user) {
+    return next(new AppError("User not found", 401));
+  }
+
+  return res.status(200).json(req.user);
+}
