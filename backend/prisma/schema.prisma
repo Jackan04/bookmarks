@@ -1,0 +1,55 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  password  String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  bookmarks Bookmark[]
+  folders   Folder[]
+
+  @@index([email])
+}
+
+model Folder {
+  id        String     @id @default(cuid())
+  name      String
+  userId    String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookmarks Bookmark[]
+
+  @@index([userId])
+}
+
+model Bookmark {
+  id          String   @id @default(cuid())
+  url         String
+  title       String
+  description String?
+  favicon     String?
+  userId      String
+  folderId    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  folder      Folder?  @relation(fields: [folderId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([folderId])
+  @@index([userId, createdAt])
+}
