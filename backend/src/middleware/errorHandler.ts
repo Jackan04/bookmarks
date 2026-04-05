@@ -1,12 +1,13 @@
 import { Request, Response, NextFunction } from "express";
+import AppError from "../types/AppError";
 
 export default function errorHandler(
-  err: Error,
+  err: AppError | Error,
   req: Request,
   res: Response,
   next: NextFunction,
 ) {
-  const statusCode = res.statusCode !== 200 ? res.statusCode : 500;
+  const statusCode = err instanceof AppError ? err.statusCode : 500;
 
   res.status(statusCode).json({
     message:
