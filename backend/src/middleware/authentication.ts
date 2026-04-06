@@ -14,3 +14,9 @@ export const createLimiter = rateLimit({
   max: 30,
   message: { message: "Too many requests, please try again later" },
 });
+
+export const deleteLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, 
+  max: 3,
+  message: { message: "Too many requests, please try again later" },
+});
