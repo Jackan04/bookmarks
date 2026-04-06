@@ -12,6 +12,10 @@ export async function register(
   try {
     const { username, password } = req.body;
 
+    if (!username.trim() || !password.trim()) {
+      return next(new AppError("Username or password is missing", 400));
+    }
+
     const passwordHash = await bcrypt.hash(password, 10);
 
     const user = await prisma.user.create({
@@ -31,6 +35,10 @@ export async function register(
 export async function login(req: Request, res: Response, next: NextFunction) {
   try {
     const { username, password } = req.body;
+
+    if (!username.trim() || !password.trim()) {
+      return next(new AppError("Username or password is missing", 400));
+    }
 
     const user = await prisma.user.findUnique({
       where: {
