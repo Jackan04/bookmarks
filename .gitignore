@@ -5,6 +5,7 @@ node_modules/
 dist/
 dist-ssr/
 build/
+/backend/src/generated/prisma
 
 # Environment variables
 .env
