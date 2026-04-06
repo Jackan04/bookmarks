@@ -3,9 +3,10 @@ import bcrypt from "bcrypt";
 import prisma from "../lib/prisma";
 import { signToken } from "../lib/jwt";
 import AppError from "../types/AppError";
+import { LoginBody, RegisterBody } from "../types/requests";
 
 export async function register(
-  req: Request,
+  req: Request<RegisterBody>,
   res: Response,
   next: NextFunction,
 ) {
@@ -32,7 +33,11 @@ export async function register(
   }
 }
 
-export async function login(req: Request, res: Response, next: NextFunction) {
+export async function login(
+  req: Request<LoginBody>,
+  res: Response,
+  next: NextFunction,
+) {
   try {
     const { username, password } = req.body;
 
